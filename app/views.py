@@ -10,7 +10,7 @@ from django.db import IntegrityError
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+from django.shortcuts import get_object_or_404
 
 
 class RegisterUser(APIView):
@@ -57,9 +57,8 @@ class GroceryItemListView(APIView):
         if serializer.is_valid():
             grocery_item = serializer.save()
             
-            # Creating recording for many o many field
-            user = User.objects.get(username = request.user)
-            grocery_list = GroceryList.objects.get(user=user)
+            # Creating record for many to many field
+            grocery_list = get_object_or_404(GroceryList, user = request.user, name="Default grocery list")
             grocery_list.items.add(grocery_item)
             grocery_list.save()
 
